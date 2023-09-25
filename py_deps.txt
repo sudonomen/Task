@@ -1,3 +1,5 @@
 sqlalchemy
 pandas
 python-dotenv
+openpyxl
+pyodbc

@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 import os
 import urllib
 
-load_dotenv('./env.env')
+load_dotenv('./env.env', override=True)
 CSV_PATH = os.environ.get("CSV_PATH")
 XLSX_PATH = os.environ.get("XLSX_PATH")
 TABLE_NAME = os.environ.get("TABLE_NAME")
