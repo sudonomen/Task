@@ -1,13 +1,11 @@
-from openpyxl import load_workbook
-from sqlalchemy import create_engine, text, MetaData, Table, Insert
+from sqlalchemy import create_engine, text, MetaData, Table
 import csv
 from pandas import read_csv, DataFrame, to_datetime, notna
 import sys
-import pyodbc
 import time
 from dotenv import load_dotenv
 import os
-
+import urllib
 
 load_dotenv('./env.env')
 CSV_PATH = os.environ.get("CSV_PATH")
@@ -19,8 +17,19 @@ PASSWORD = os.environ.get("PASSWORD")
 HOST = os.environ.get("HOST")
 PORT = os.environ.get("PORT")
 DRIVER = os.environ.get("DRIVER")
-CONNECTION_STRING = f"mssql+pyodbc://{USERNAME}:{PASSWORD}@{HOST}:{PORT}/{DATABASE}?driver={DRIVER}"
-
+encoded_password = urllib.parse.quote(PASSWORD)
+odbc_conn_str = (
+    f"Driver={DRIVER};"
+    f"Server={HOST},{PORT};"
+    f"Database={DATABASE};"
+    f"Uid={USERNAME};"
+    f"Pwd={encoded_password};"
+    f"Encrypt=yes;"
+    f"TrustServerCertificate=no;"
+)
+print(odbc_conn_str)
+params = urllib.parse.quote_plus(odbc_conn_str)
+CONNECTION_STRING = f"mssql+pyodbc:///?odbc_connect={params}"
 def set_types(df:DataFrame)->bool:
         try:
             df = df.astype({
