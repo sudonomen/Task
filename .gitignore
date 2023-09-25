@@ -1,3 +1,4 @@
 # Dont include csv data or env vars. Cleaning git history isn't fun.
 *.csv
 *.env
+*.png

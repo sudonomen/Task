@@ -87,9 +87,8 @@ func submitHandler(w http.ResponseWriter, r *http.Request) {
 func pbiHandler(w http.ResponseWriter, r *http.Request) {
 	templates.ExecuteTemplate(w, "pbi.html", nil)
 }
-
 func tryInsertIntoDB(data Employee) bool {
-	//parameterize the query
+	//parameterize the query. Inject me not!
 	currentDate := time.Now().Format("2006-01-02")
 	query := `INSERT INTO [data] ([Full Name], Department, Title, [Date]) VALUES (@Name, @Department, @Title, @Date)`
 	_, err := db.Exec(query, sql.Named("Name", data.Name), sql.Named("Department", data.Department), sql.Named("Title", data.Title), sql.Named("Date", currentDate))

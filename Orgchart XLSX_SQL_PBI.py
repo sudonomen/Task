@@ -1,5 +1,4 @@
 from sqlalchemy import create_engine, text, MetaData, Table
-import csv
 from pandas import read_csv, DataFrame, to_datetime, notna
 import sys
 import time
@@ -27,7 +26,7 @@ odbc_conn_str = (
     f"Encrypt=yes;"
     f"TrustServerCertificate=no;"
 )
-print(odbc_conn_str)
+
 params = urllib.parse.quote_plus(odbc_conn_str)
 CONNECTION_STRING = f"mssql+pyodbc:///?odbc_connect={params}"
 def set_types(df:DataFrame)->bool:
@@ -59,7 +58,7 @@ def csv_to_df(path:str)->DataFrame:
     try:
         df1 = read_csv(path, delimiter=";")
     except FileNotFoundError as e:
-        print(e, "Couldn't fund the CSV file at {} Exiting...".format(path))
+        print(e, "Couldn't find the CSV file at {} Exiting...".format(path))
         sys.exit(1)
     except Exception as e:
         print(e, "Failed to read CSV file. Exiting...")
@@ -112,7 +111,7 @@ def df_to_sql(df:DataFrame, table_name:str, retries=5, time_between_retries=5)->
             #connection made. Delete table data and insert new data
             try:
                 # don't use DataFrame.to_sql with if_exists='replace' as that would delete and recreate the table structure each time. Plus remove indexes and primary keys.
-                # when testing it also seemed to overwrite the tables data types. Better to seperate the concerns and let sql define the datamodel. pandas adheres to it.
+                # when testing it also seemed to overwrite the tables data types. Better to seperate the concerns and let sql define the datamodel.
                 delete_table_data(table_name, connection, consent='delete it all')
                 metadata = MetaData()
                 dict_of_dataframe = df.to_dict('records')
@@ -131,7 +130,7 @@ def df_to_sql(df:DataFrame, table_name:str, retries=5, time_between_retries=5)->
                 connection.close()
                 return False
     except Exception as e:
-        # if connection fails try again. Nieve approach. careful with the retries as its recursive
+        # if connection fails try again. Nieve approach. careful with the retries as its recursive. Change to loop later.
         print(e)
         print("Failed to connect to SQL server. Panicing but holding on to hope. Trying again...")
         if retries > 0:
